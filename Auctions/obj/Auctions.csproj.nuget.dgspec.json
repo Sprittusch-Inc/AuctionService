@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Yousef\\Desktop\\AuctionService\\Auctions\\Auctions.csproj": {}
+    "C:\\Users\\Yousef\\Desktop\\Projekt 4. Sem\\AuctionService\\Auctions\\Auctions.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Yousef\\Desktop\\AuctionService\\Auctions\\Auctions.csproj": {
+    "C:\\Users\\Yousef\\Desktop\\Projekt 4. Sem\\AuctionService\\Auctions\\Auctions.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Yousef\\Desktop\\AuctionService\\Auctions\\Auctions.csproj",
+        "projectUniqueName": "C:\\Users\\Yousef\\Desktop\\Projekt 4. Sem\\AuctionService\\Auctions\\Auctions.csproj",
         "projectName": "Auctions",
-        "projectPath": "C:\\Users\\Yousef\\Desktop\\AuctionService\\Auctions\\Auctions.csproj",
+        "projectPath": "C:\\Users\\Yousef\\Desktop\\Projekt 4. Sem\\AuctionService\\Auctions\\Auctions.csproj",
         "packagesPath": "C:\\Users\\Yousef\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Yousef\\Desktop\\AuctionService\\Auctions\\obj\\",
+        "outputPath": "C:\\Users\\Yousef\\Desktop\\Projekt 4. Sem\\AuctionService\\Auctions\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Yousef\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -43,6 +43,14 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[7.0.3, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[2.19.1, )"
+            },
+            "Rabbitmq.Client": {
+              "target": "Package",
+              "version": "[6.5.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
