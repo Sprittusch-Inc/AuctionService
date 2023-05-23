@@ -11,16 +11,11 @@ public class Bid
     public int BidId { get; set; }
     public int AuctionId { get; set; }
     public string? UserId { get; set; }
-    public string? Currency { get; set; }
+    public string? Currency { get; set; } = "DKK";
     public int Amount { get; set; }
-    public DateTime BidDate { get; set; }
+    public DateTime BidDate { get; set; } = DateTime.UtcNow;
 
 
     // Methods
-    public int IncrementId(int BidId)
-    {
-        BidId += 1;
-        return BidId;
-    }
-
+    
 }

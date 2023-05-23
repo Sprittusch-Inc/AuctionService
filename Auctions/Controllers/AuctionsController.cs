@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Auctions.Service;
 using Auctions.Models;
 using MongoDB.Driver;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 namespace Auctions.Controllers;
 
@@ -15,19 +17,33 @@ public class AuctionsController : ControllerBase
     private readonly IConfiguration _config;
     private readonly IMongoCollection<Auction> _collection;
     private readonly AuctionService _auctionsService;
+    private static string? _hostName;
 
 
     public AuctionsController(ILogger<AuctionsController> logger, IConfiguration config)
     {
         _logger = logger;
         _config = config;
+        _hostName = config["HostName"] ?? "localhost";
+
 
         string connString = config.GetConnectionString("MongoDB")!;
         var client = new MongoClient(connString);
         var db = client.GetDatabase("AuctionDB");
         _collection = db.GetCollection<Auction>("Auctions");
 
-        _auctionsService = new AuctionService(_logger, _collection);
+        // Queue i RabbitMQ
+        /*var factory = new ConnectionFactory { HostName = _hostName };
+        using var connection = factory.CreateConnection();
+        using var channel = connection.CreateModel();
+        channel.QueueDeclare(queue: "bids",
+                             durable: true,
+                             exclusive: false,
+                             autoDelete: false,
+                             arguments: null);*/
+
+        // AuctionService
+        _auctionsService = new AuctionService(_logger, _collection, _config);
     }
 
 
@@ -48,6 +64,13 @@ public class AuctionsController : ControllerBase
     {
         return await _auctionsService.PostAuctionAsync(model);
     }
+
+    [HttpPost("{auctionId}")]
+    public async Task<IResult> PostBidAsync([FromBody] Bid bid, int auctionId)
+    {
+        return await _auctionsService.PostBidAsync(bid, auctionId);
+    }
+
 
     [HttpPut("{auctionId}")]
     public async Task<IResult> UpdateAuctionAsync([FromBody] Auction model, int auctionId)
