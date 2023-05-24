@@ -163,6 +163,10 @@ public class AuctionService
         {
             return Results.Problem($"Auction with auctionId {auctionId} not found.", statusCode: 404);
         }
+        if (auc.StartDate > DateTime.Now || auc.EndDate < DateTime.Now)
+        {
+            return Results.Problem($"Auction with auctionId {auctionId} is not open.", statusCode: 406);
+        }
 
         try
         {
