@@ -6,6 +6,7 @@ namespace Auctions.Models;
 
 public class Auction
 {
+    [BsonElement("_id")]
     [BsonId]
     public ObjectId Id { get; set; }
     public int AuctionId { get; set; }
@@ -15,7 +16,7 @@ public class Auction
     public DateTime? EndDate { get; set; }
     public int MinBid { get; set; }
     public int NextBid { get; set; } = 0;
-    public List<Bid>? Bids { get; set; }
+    public List<Bid>? Bids { get; set; } = new List<Bid>();
 
     // Methods
     public int CalcNextBid(int MinBid, int NextBid)

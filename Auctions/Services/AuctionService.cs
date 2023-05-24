@@ -1,4 +1,5 @@
 using Auctions.Models;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using RabbitMQ.Client;
@@ -206,4 +207,26 @@ public class AuctionService
         }
     }
 
+
+    public async Task<IResult> DeleteAuctionAsync(int auctionId)
+    {
+
+        try
+        {
+            var filter = Builders<Auction>.Filter.Eq("AuctionId", auctionId);
+            Auction auction = await _collection.Find(filter).FirstOrDefaultAsync();
+            if (auction == null)
+            {
+                throw new Exception($"Auction was not found. AuctionId: {auctionId}");
+            }
+
+            await _collection.DeleteOneAsync(filter);
+            return Results.Ok($"An Auction with the AuctionId of {auctionId} was deleted.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return Results.Problem($"ERROR: {ex.Message}", statusCode: 500);
+        }
+    }
 }

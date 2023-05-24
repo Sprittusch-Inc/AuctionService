@@ -32,16 +32,6 @@ public class AuctionsController : ControllerBase
         var db = client.GetDatabase("AuctionDB");
         _collection = db.GetCollection<Auction>("Auctions");
 
-        // Queue i RabbitMQ
-        /*var factory = new ConnectionFactory { HostName = _hostName };
-        using var connection = factory.CreateConnection();
-        using var channel = connection.CreateModel();
-        channel.QueueDeclare(queue: "bids",
-                             durable: true,
-                             exclusive: false,
-                             autoDelete: false,
-                             arguments: null);*/
-
         // AuctionService
         _auctionsService = new AuctionService(_logger, _collection, _config);
     }
@@ -76,6 +66,12 @@ public class AuctionsController : ControllerBase
     public async Task<IResult> UpdateAuctionAsync([FromBody] Auction model, int auctionId)
     {
         return await _auctionsService.UpdateAuctionAsync(model, auctionId);
+    }
+
+    [HttpDelete("{auctionId}")]
+    public async Task<IResult> DeleteAuctionAsync(int auctionId)
+    {
+        return await _auctionsService.DeleteAuctionAsync(auctionId);
     }
 
 
