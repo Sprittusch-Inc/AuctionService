@@ -6,6 +6,7 @@ namespace Auctions.Models;
 
 public class Auction
 {
+    [BsonElement("_id")]
     [BsonId]
     public ObjectId Id { get; set; }
     public int AuctionId { get; set; }

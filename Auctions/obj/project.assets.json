@@ -1311,19 +1311,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Yousef\\.nuget\\packages\\": {}
+    "C:\\Users\\PCUser\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Yousef\\Desktop\\Projekt 4. Sem\\AuctionService\\Auctions\\Auctions.csproj",
+      "projectUniqueName": "C:\\Users\\PCUser\\Desktop\\Projekt 4. sem\\AuctionService\\Auctions\\Auctions.csproj",
       "projectName": "Auctions",
-      "projectPath": "C:\\Users\\Yousef\\Desktop\\Projekt 4. Sem\\AuctionService\\Auctions\\Auctions.csproj",
-      "packagesPath": "C:\\Users\\Yousef\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Yousef\\Desktop\\Projekt 4. Sem\\AuctionService\\Auctions\\obj\\",
+      "projectPath": "C:\\Users\\PCUser\\Desktop\\Projekt 4. sem\\AuctionService\\Auctions\\Auctions.csproj",
+      "packagesPath": "C:\\Users\\PCUser\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\PCUser\\Desktop\\Projekt 4. sem\\AuctionService\\Auctions\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Yousef\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\PCUser\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

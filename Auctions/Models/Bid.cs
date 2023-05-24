@@ -6,6 +6,7 @@ namespace Auctions.Models;
 
 public class Bid
 {
+    [BsonElement("_id")]
     [BsonId]
     public ObjectId Id { get; set; }
     public int BidId { get; set; }
@@ -17,5 +18,5 @@ public class Bid
 
 
     // Methods
-    
+
 }
