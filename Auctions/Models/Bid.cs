@@ -15,8 +15,4 @@ public class Bid
     public string? Currency { get; set; } = "DKK";
     public int Amount { get; set; }
     public DateTime BidDate { get; set; } = DateTime.UtcNow;
-
-
-    // Methods
-
 }

@@ -38,7 +38,7 @@ public class AuctionsController : ControllerBase
 
 
     [HttpGet]
-    public async Task<List<Auction>> GetAuctions()
+    public async Task<IResult> GetAuctions()
     {
         return await _auctionsService.GetAuctionsAsync();
     }
