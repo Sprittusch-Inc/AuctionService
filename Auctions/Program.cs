@@ -16,11 +16,9 @@ builder.Services
     options.TokenValidationParameters = new TokenValidationParameters()
     {
         ValidateIssuer = true,
-        ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = myIssuer,
-        ValidAudience = "http://localhost",
         IssuerSigningKey =
     new SymmetricSecurityKey(Encoding.UTF8.GetBytes(mySecret))
     };

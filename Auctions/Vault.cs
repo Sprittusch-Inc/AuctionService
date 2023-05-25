@@ -13,7 +13,7 @@ public class Vault
 
     public Vault()
     {
-        EndPoint = "https://localhost:8201/";
+        EndPoint = _config["Vault_Endpoint"];
         httpClientHandler = new HttpClientHandler();
         httpClientHandler.ServerCertificateCustomValidationCallback =
         (message, cert, chain, sslPolicyErrors) => { return true; };
