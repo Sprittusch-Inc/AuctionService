@@ -24,6 +24,7 @@ public class Vault
     {
         // Initialize one of the several auth methods.
         IAuthMethodInfo authMethod = new TokenAuthMethodInfo(_config["Vault_Token"]);
+        
         // Initialize settings. You can also set proxies, custom delegates etc.here.
         var vaultClientSettings = new VaultClientSettings(EndPoint, authMethod)
         {

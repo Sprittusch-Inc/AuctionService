@@ -36,12 +36,16 @@ public class AuctionService
         {
             _logger.LogInformation("Looking for auctions...");
 
+            // Opretter et AND-filter, som består af 2 filtre (less than & greater than) ift. tidspunktet af kaldet (UTC)
             var filter = Builders<Auction>.Filter.And(
                     Builders<Auction>.Filter.Lt(a => a.StartDate, DateTime.UtcNow),
                     Builders<Auction>.Filter.Gt(a => a.EndDate, DateTime.UtcNow)
                 );
 
+            // Henter alle auktioner asynkront ind i en liste, hvis de matcher begge filtre defineret i filter-variablen
             List<Auction> auctions = await _collection.Find(filter).ToListAsync();
+            
+            // Hvis listen er tom, kastes en exception som logges i catch-blokken
             if (auctions.Count < 1)
             {
                 throw new Exception("No auctions found.");
@@ -65,8 +69,11 @@ public class AuctionService
         try
         {
             _logger.LogInformation($"Looking for auction with auctionId: {auctionId}");
-
+            
+            // Henter en auktion som har et "AuctionId" som matcher det id der blev kaldt efter ved endepunktet
             var auction = await _collection.Find(Builders<Auction>.Filter.Eq("AuctionId", auctionId)).FirstOrDefaultAsync();
+
+            // hvis auktionen er null, kastes en exception
             if (auction == null)
             {
                 throw new Exception($"No auction with the given ID ({auctionId}) was found.");
@@ -76,7 +83,7 @@ public class AuctionService
         }
         catch (Exception ex)
         {
-            _logger.LogError($"{ex.Message}");
+            _logger.LogError(ex.Message);
             return Results.Problem($"ERROR: {ex.Message}", statusCode: 500);
         }
     }
@@ -88,26 +95,38 @@ public class AuctionService
 
         try
         {
-            _logger.LogInformation("Attempting to post auction: ");
+            _logger.LogInformation("Attempting to post auction...");
+
+            // Herunder ses en liste af exceptions.
+            // Hvis start- og slutdato mangler, kastes en exception som informerer om dette.
             if (model.StartDate == null || model.EndDate == null)
             {
                 throw new Exception("Start- and end-dates must not be null.");
             }
+
+            // Hvis startdato er senere end slutdato, kastes en exception som informerer om dette.
             if (model.StartDate > model.EndDate)
             {
                 throw new Exception("Start-date must not be after the end-date.");
             }
 
+            // Hvis AuctioneerId (Email) mangler, kastes en exception som informerer om dette.
             if (model.AuctioneerId == null)
             {
                 throw new Exception("AuctioneerId must not be null.");
             }
 
+            // Dokumenterne i databasen bliver talt op ved CountDocuments med et tomt filter, hvor det plusses med 1
             int highestId = ((int)_collection.CountDocuments(Builders<Auction>.Filter.Empty)) + 1;
+
+            // Så længe det ID vi finder frem til, findes i databasen, så plusses highestId med 1
             while (_collection.Find(Builders<Auction>.Filter.Eq("AuctionId", highestId)).Any() == true)
             {
                 highestId++;
             }
+
+            // Tilgængeligt Id fundet, som nu sættes til at være AuctionId
+            // Herefter er nextbid givet ved en default af 0, hvor nextbid findes ved CalcNextBid()
             model.AuctionId = highestId;
             model.NextBid = model.CalcNextBid(model.MinBid, model.NextBid);
 
@@ -118,7 +137,7 @@ public class AuctionService
         }
         catch (Exception ex)
         {
-            _logger.LogError($"{ex.Message}");
+            _logger.LogError(ex.Message);
             return Results.Problem($"ERROR: {ex.Message}", statusCode: 500);
         }
     }
@@ -131,6 +150,8 @@ public class AuctionService
         try
         {
             _logger.LogInformation($"Checking if auction with auctionId {auctionId} exists...");
+
+            // Exceptions
             if (_collection.Find(Builders<Auction>.Filter.Eq("AuctionId", auctionId)).Any() == false)
             {
                 throw new Exception($"No auction with the given ID ({auctionId}) exists.");
@@ -140,6 +161,7 @@ public class AuctionService
             {
                 throw new Exception("Start- and end-dates must not be null.");
             }
+
             if (model.StartDate > model.EndDate)
             {
                 throw new Exception("Start-date must not be after the end-date.");
@@ -150,6 +172,8 @@ public class AuctionService
                 throw new Exception("AuctioneerId must not be null.");
             }
 
+            // Hvis listen af bud indeholder mindst 1 bud, bliver de behandlet
+            // Counter sættes til 1, hvorefter der loopes igennem listen og counteren bruges til at sætte BidId
             if (model.Bids?.Count > 0)
             {
                 _logger.LogInformation("Processing list of Bids...");
@@ -164,7 +188,10 @@ public class AuctionService
                 }
             }
 
+            // Opretter filter som tjekker efter "AuctionId" som svarer til det kaldte auctionId
             var filter = Builders<Auction>.Filter.Eq("AuctionId", auctionId);
+            
+            // Opretter update som ændrer adskillige felter
             var update = Builders<Auction>.Update
                 .Set(x => x.AuctioneerId, model.AuctioneerId)
                 .Set(x => x.StartDate, model.StartDate)
@@ -173,15 +200,16 @@ public class AuctionService
                 .Set(x => x.NextBid, model.CalcNextBid(model.MinBid, model.NextBid))
                 .Set(x => x.Bids, model.Bids);
 
+            // Kalder UpdateOneAsync med filter- og update-variablerne
             _logger.LogInformation($"Attempting to update auction with auctionId: {auctionId}");
-
             await _collection.UpdateOneAsync(filter, update);
+            
             _logger.LogInformation($"Successfully updated auction with auctionId: {auctionId}");
             return Results.Ok($"An auction with the auctionId of {auctionId} was updated.");
         }
         catch (Exception ex)
         {
-            _logger.LogError($"{ex.Message}");
+            _logger.LogError(ex.Message);
             return Results.Problem($"ERROR: {ex.Message}", statusCode: 500);
         }
     }
@@ -190,8 +218,11 @@ public class AuctionService
     {
         _logger.LogInformation("Method PostBidAsync() called");
 
+        // Tjekker om auctionen med auctionId findes i databasen
         _logger.LogInformation($"Validating auction with auctionId {auctionId}...");
         Auction auc = await _collection.Find(Builders<Auction>.Filter.Eq("AuctionId", auctionId)).FirstOrDefaultAsync();
+        
+        
         if (auc == null)
         {
             _logger.LogError($"Auction with auctionId {auctionId} not found.");
@@ -206,6 +237,8 @@ public class AuctionService
         try
         {
             _logger.LogInformation("Processing bid...");
+
+            // Counter for BidId som sendes ud til queue
             int counter = 0;
             if (auc != null && auc.Bids != null)
             {
@@ -213,13 +246,16 @@ public class AuctionService
             }
             else { counter = 1; }
 
+            // Opdaterer BidId og AuctionId i bid-objektet
             bid.BidId = counter;
             bid.AuctionId = auctionId;
-            // Tilføj bid.UserId fra JWT-Token
+            
 
+            // Serialisering af bid-objektet
             var message = JsonSerializer.Serialize(bid);
             var body = Encoding.UTF8.GetBytes(message);
 
+            // Deklarering af queue
             var factory = new ConnectionFactory { HostName = _hostName };
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
@@ -232,6 +268,7 @@ public class AuctionService
                 arguments: null
             );
 
+            // Afsendelse af bid-objekt til queue som JSON
             _logger.LogInformation($"Publishing bid with BidId {bid.BidId} to the queue...");
             channel.BasicPublish(
                 exchange: string.Empty,
@@ -245,7 +282,7 @@ public class AuctionService
         }
         catch (Exception ex)
         {
-            _logger.LogError($"{ex.Message}");
+            _logger.LogError(ex.Message);
             return Results.Problem($"ERROR: {ex.Message}", statusCode: 500);
         }
     }
@@ -257,17 +294,20 @@ public class AuctionService
 
         try
         {
+            // Tjekker om auktion med givet Id findes i databasen
             _logger.LogInformation($"Checking if auction with AuctionId {auctionId} exists...");
             var filter = Builders<Auction>.Filter.Eq("AuctionId", auctionId);
             Auction auction = await _collection.Find(filter).FirstOrDefaultAsync();
+            
             if (auction == null)
             {
                 throw new Exception($"Auction with AuctionId {auctionId} was not found.");
             }
 
+            // Sletter auktion som matcher givet Id
             _logger.LogInformation($"Attempting to delete auction with AuctionId {auctionId}...");
             await _collection.DeleteOneAsync(filter);
-
+            
             _logger.LogInformation($"Successfully deleted auction with AuctionId {auctionId}.");
             return Results.Ok($"An Auction with the AuctionId of {auctionId} was deleted.");
         }
