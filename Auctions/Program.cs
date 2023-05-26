@@ -15,8 +15,13 @@ logger.Debug("init main");
 
 
 var builder = WebApplication.CreateBuilder(args);
+IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+configurationBuilder.AddJsonFile("appsettings.json");
+configurationBuilder.AddEnvironmentVariables();
+IConfiguration config = configurationBuilder.Build();
 
-Vault vault = new();
+Vault vault = new(config);
+
 string myIssuer = vault.GetSecret("authentication", "issuer").Result;
 string mySecret = vault.GetSecret("authentication", "secret").Result;
 
@@ -37,8 +42,10 @@ builder.Services
         {
             ValidateIssuer = true,
             ValidateLifetime = true,
+            ValidateAudience = true,
             ValidateIssuerSigningKey = true,
             ValidIssuer = myIssuer,
+            ValidAudience = "https://localhost",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(mySecret))
         };
     });

@@ -11,9 +11,10 @@ public class Vault
     private readonly string EndPoint;
     private HttpClientHandler httpClientHandler;
 
-    public Vault()
+    public Vault(IConfiguration config)
     {
-        EndPoint = _config["Vault_Endpoint"]!;
+        _config = config;
+        EndPoint = _config["Vault_Endpoint"];
         httpClientHandler = new HttpClientHandler();
         httpClientHandler.ServerCertificateCustomValidationCallback =
         (message, cert, chain, sslPolicyErrors) => { return true; };
@@ -22,6 +23,7 @@ public class Vault
 
     public async Task<string> GetSecret(string path, string key)
     {
+
         // Initialize one of the several auth methods.
         IAuthMethodInfo authMethod = new TokenAuthMethodInfo(_config["Vault_Token"]);
         
