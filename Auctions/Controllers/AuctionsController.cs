@@ -19,6 +19,7 @@ public class AuctionsController : ControllerBase
     private readonly IMongoCollection<Auction> _collection;
     private readonly AuctionService _auctionsService;
     private static string? _hostName;
+    private Vault vault;
 
 
     public AuctionsController(ILogger<AuctionsController> logger, IConfiguration config)
@@ -26,10 +27,11 @@ public class AuctionsController : ControllerBase
         _logger = logger;
         _config = config;
         _hostName = config["HostName"] ?? "localhost";
-
-
-        string connString = config.GetConnectionString("MongoDB")!;
-        var client = new MongoClient(connString);
+        
+        vault = new Vault(_config);
+        string cons = vault.GetSecret("dbconnection", "constring").Result;
+        
+        var client = new MongoClient(cons);
         var db = client.GetDatabase("AuctionDB");
         _collection = db.GetCollection<Auction>("Auctions");
 
