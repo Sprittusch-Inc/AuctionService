@@ -74,7 +74,7 @@ public class AuctionsController : ControllerBase
     }
     
     [Authorize(Roles = "Admin")]
-    [HttpDelete("deleteauc/{auctionId}")]
+    [HttpDelete("{auctionId}")]
     public async Task<IResult> DeleteAuctionAsync(int auctionId)
     {
         return await _auctionsService.DeleteAuctionAsync(auctionId);
