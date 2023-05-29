@@ -172,33 +172,15 @@ public class AuctionService
                 throw new Exception("AuctioneerId must not be null.");
             }
 
-            // Hvis listen af bud indeholder mindst 1 bud, bliver de behandlet
-            // Counter sættes til 1, hvorefter der loopes igennem listen og counteren bruges til at sætte BidId
-            if (model.Bids?.Count > 0)
-            {
-                _logger.LogInformation("Processing list of Bids...");
-                int counter = 1;
-                foreach (var bid in model.Bids)
-                {
-                    bid.BidId = counter;
-                    counter++;
-
-                    bid.BidDate = DateTime.UtcNow;
-                    bid.AuctionId = auctionId;
-                }
-            }
-
             // Opretter filter som tjekker efter "AuctionId" som svarer til det kaldte auctionId
             var filter = Builders<Auction>.Filter.Eq("AuctionId", auctionId);
-            
+
             // Opretter update som ændrer adskillige felter
             var update = Builders<Auction>.Update
-                .Set(x => x.AuctioneerId, model.AuctioneerId)
                 .Set(x => x.StartDate, model.StartDate)
                 .Set(x => x.EndDate, model.EndDate)
                 .Set(x => x.MinBid, model.MinBid)
-                .Set(x => x.NextBid, model.CalcNextBid(model.MinBid, model.NextBid))
-                .Set(x => x.Bids, model.Bids);
+                .Set(x => x.NextBid, model.CalcNextBid(model.MinBid, model.NextBid));
 
             // Kalder UpdateOneAsync med filter- og update-variablerne
             _logger.LogInformation($"Attempting to update auction with auctionId: {auctionId}");

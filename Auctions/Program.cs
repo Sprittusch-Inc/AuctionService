@@ -45,7 +45,7 @@ builder.Services
             ValidateAudience = true,
             ValidateIssuerSigningKey = true,
             ValidIssuer = myIssuer,
-            ValidAudience = "https://localhost",
+            ValidAudience = "http://localhost",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(mySecret))
         };
     });
