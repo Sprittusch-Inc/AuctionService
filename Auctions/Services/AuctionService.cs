@@ -15,7 +15,8 @@ public class AuctionService
     private readonly ILogger _logger;
     private readonly IConfiguration _config;
     private readonly IMongoCollection<Auction> _collection;
-    private static string? _hostName;
+    private static string? rabbitmqHost;
+    private static int rabbitmqPort;
 
     public AuctionService(ILogger logger, IMongoCollection<Auction> collection, IConfiguration config)
     {
@@ -23,8 +24,10 @@ public class AuctionService
         _config = config;
         _collection = collection;
 
-        _hostName = config["HostName"] ?? "localhost";
-        _logger.LogInformation($"HostName is set to: {_hostName}");
+        rabbitmqHost = _config["RABBITMQ_HOST"] ?? "localhost";
+        _logger.LogInformation($"rabbitmqHost is set to: {rabbitmqHost}");
+        rabbitmqPort = int.Parse(_config["RABBITMQ_PORT"]!);
+        _logger.LogInformation($"rabbitmqPort is set to: {rabbitmqPort}");
     }
 
 
@@ -44,7 +47,7 @@ public class AuctionService
 
             // Henter alle auktioner asynkront ind i en liste, hvis de matcher begge filtre defineret i filter-variablen
             List<Auction> auctions = await _collection.Find(filter).ToListAsync();
-            
+
             // Hvis listen er tom, kastes en exception som logges i catch-blokken
             if (auctions.Count < 1)
             {
@@ -57,7 +60,7 @@ public class AuctionService
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return Results.Problem($"{ex.Message}", statusCode:404);
+            return Results.Problem($"{ex.Message}", statusCode: 404);
         }
     }
 
@@ -69,7 +72,7 @@ public class AuctionService
         try
         {
             _logger.LogInformation($"Looking for auction with auctionId: {auctionId}");
-            
+
             // Henter en auktion som har et "AuctionId" som matcher det id der blev kaldt efter ved endepunktet
             var auction = await _collection.Find(Builders<Auction>.Filter.Eq("AuctionId", auctionId)).FirstOrDefaultAsync();
 
@@ -185,7 +188,7 @@ public class AuctionService
             // Kalder UpdateOneAsync med filter- og update-variablerne
             _logger.LogInformation($"Attempting to update auction with auctionId: {auctionId}");
             await _collection.UpdateOneAsync(filter, update);
-            
+
             _logger.LogInformation($"Successfully updated auction with auctionId: {auctionId}");
             return Results.Ok($"An auction with the auctionId of {auctionId} was updated.");
         }
@@ -203,8 +206,8 @@ public class AuctionService
         // Tjekker om auctionen med auctionId findes i databasen
         _logger.LogInformation($"Validating auction with auctionId {auctionId}...");
         Auction auc = await _collection.Find(Builders<Auction>.Filter.Eq("AuctionId", auctionId)).FirstOrDefaultAsync();
-        
-        
+
+
         if (auc == null)
         {
             _logger.LogError($"Auction with auctionId {auctionId} not found.");
@@ -231,14 +234,18 @@ public class AuctionService
             // Opdaterer BidId og AuctionId i bid-objektet
             bid.BidId = counter;
             bid.AuctionId = auctionId;
-            
+
 
             // Serialisering af bid-objektet
             var message = JsonSerializer.Serialize(bid);
             var body = Encoding.UTF8.GetBytes(message);
 
             // Deklarering af queue
-            var factory = new ConnectionFactory { HostName = _hostName };
+            var factory = new ConnectionFactory {
+                HostName = rabbitmqHost,
+                Port = rabbitmqPort
+            };
+            
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
 
@@ -280,7 +287,7 @@ public class AuctionService
             _logger.LogInformation($"Checking if auction with AuctionId {auctionId} exists...");
             var filter = Builders<Auction>.Filter.Eq("AuctionId", auctionId);
             Auction auction = await _collection.Find(filter).FirstOrDefaultAsync();
-            
+
             if (auction == null)
             {
                 throw new Exception($"Auction with AuctionId {auctionId} was not found.");
@@ -289,7 +296,7 @@ public class AuctionService
             // Sletter auktion som matcher givet Id
             _logger.LogInformation($"Attempting to delete auction with AuctionId {auctionId}...");
             await _collection.DeleteOneAsync(filter);
-            
+
             _logger.LogInformation($"Successfully deleted auction with AuctionId {auctionId}.");
             return Results.Ok($"An Auction with the AuctionId of {auctionId} was deleted.");
         }
