@@ -12,9 +12,10 @@ NLog.LogManager.Setup()
     .GetCurrentClassLogger();
 logger.Debug("init main");
 
-
-
 var builder = WebApplication.CreateBuilder(args);
+
+// Vault deployment-issues
+/*
 IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 configurationBuilder.AddJsonFile("appsettings.json");
 configurationBuilder.AddEnvironmentVariables();
@@ -24,6 +25,10 @@ Vault vault = new(config);
 
 string myIssuer = vault.GetSecret("authentication", "issuer").Result;
 string mySecret = vault.GetSecret("authentication", "secret").Result;
+*/
+
+string myIssuer = Environment.GetEnvironmentVariable("Issuer") ?? "Sprittusch Inc.";
+string mySecret = Environment.GetEnvironmentVariable("Secret") ?? "SpritNet";
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -42,7 +47,7 @@ builder.Services
         {
             ValidateIssuer = true,
             ValidateLifetime = true,
-            ValidateAudience = true,
+            ValidateAudience = false,
             ValidateIssuerSigningKey = true,
             ValidIssuer = myIssuer,
             ValidAudience = "http://localhost",

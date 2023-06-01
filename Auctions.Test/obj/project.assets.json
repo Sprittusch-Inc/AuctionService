@@ -6240,19 +6240,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\PCUser\\.nuget\\packages\\": {}
+    "C:\\Users\\Yousef\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\PCUser\\Desktop\\Projekt 4. sem\\AuctionService\\Auctions.Test\\Auctions.Test.csproj",
+      "projectUniqueName": "C:\\Users\\Yousef\\Desktop\\Projekt 4. Sem\\AuctionService\\Auctions.Test\\Auctions.Test.csproj",
       "projectName": "Auctions.Test",
-      "projectPath": "C:\\Users\\PCUser\\Desktop\\Projekt 4. sem\\AuctionService\\Auctions.Test\\Auctions.Test.csproj",
-      "packagesPath": "C:\\Users\\PCUser\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\PCUser\\Desktop\\Projekt 4. sem\\AuctionService\\Auctions.Test\\obj\\",
+      "projectPath": "C:\\Users\\Yousef\\Desktop\\Projekt 4. Sem\\AuctionService\\Auctions.Test\\Auctions.Test.csproj",
+      "packagesPath": "C:\\Users\\Yousef\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Yousef\\Desktop\\Projekt 4. Sem\\AuctionService\\Auctions.Test\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\PCUser\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Yousef\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -6266,8 +6266,8 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\Users\\PCUser\\Desktop\\Projekt 4. sem\\AuctionService\\Auctions\\Auctions.csproj": {
-              "projectPath": "C:\\Users\\PCUser\\Desktop\\Projekt 4. sem\\AuctionService\\Auctions\\Auctions.csproj"
+            "C:\\Users\\Yousef\\Desktop\\Projekt 4. Sem\\AuctionService\\Auctions\\Auctions.csproj": {
+              "projectPath": "C:\\Users\\Yousef\\Desktop\\Projekt 4. Sem\\AuctionService\\Auctions\\Auctions.csproj"
             }
           }
         }

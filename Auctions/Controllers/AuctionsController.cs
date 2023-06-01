@@ -18,20 +18,25 @@ public class AuctionsController : ControllerBase
     private readonly IConfiguration _config;
     private readonly IMongoCollection<Auction> _collection;
     private readonly AuctionService _auctionsService;
-    private static string? _hostName;
-    private Vault vault;
+    private static string? _connString;
 
+    // Vault deployment-issues
+    /* 
+    private Vault vault;
+    */
 
     public AuctionsController(ILogger<AuctionsController> logger, IConfiguration config)
     {
         _logger = logger;
         _config = config;
-        _hostName = config["HostName"] ?? "localhost";
-        
+        _connString = config["MongoConnection"];
+
+        /*
         vault = new Vault(_config);
         string cons = vault.GetSecret("dbconnection", "constring").Result;
-        
-        var client = new MongoClient(cons);
+        */
+
+        var client = new MongoClient(_connString);
         var db = client.GetDatabase("AuctionDB");
         _collection = db.GetCollection<Auction>("Auctions");
 
