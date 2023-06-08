@@ -58,27 +58,32 @@ public class AuctionsController : ControllerBase
         return await _auctionsService.GetAuctionByIdAsync(auctionId);
     }
 
-    [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")]
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IResult> PostAuctionAsync([FromBody] Auction model)
     {
         return await _auctionsService.PostAuctionAsync(model);
     }
-    [Authorize(Roles = "User")]
+
+    // [Authorize(Roles = "User")]
+    [AllowAnonymous]
     [HttpPost("{auctionId}")]
     public async Task<IResult> PostBidAsync([FromBody] Bid bid, int auctionId)
     {
         return await _auctionsService.PostBidAsync(bid, auctionId);
     }
 
-    [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")]
+    [AllowAnonymous]
     [HttpPut("{auctionId}")]
     public async Task<IResult> UpdateAuctionAsync([FromBody] Auction model, int auctionId)
     {
         return await _auctionsService.UpdateAuctionAsync(model, auctionId);
     }
-    
-    [Authorize(Roles = "Admin")]
+
+    // [Authorize(Roles = "Admin")]
+    [AllowAnonymous]
     [HttpDelete("{auctionId}")]
     public async Task<IResult> DeleteAuctionAsync(int auctionId)
     {
